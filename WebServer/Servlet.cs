@@ -1,7 +1,7 @@
 ﻿namespace WebServer;
 
-public interface Servlet
+public interface IServlet
 {
-    public void doGet(HttpRequest req, HttpResponse res);
-    public void doPost(HttpRequest req, HttpResponse res);
+    public void DoGet(HttpRequest req, HttpResponse res);
+    public void DoPost(HttpRequest req, HttpResponse res);
 }
