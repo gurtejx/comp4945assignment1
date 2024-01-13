@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 public class FormData
 {
-    public string Date { get; set; }
-    public string Caption { get; set; }
-    public byte[] ImageData { get; set; } 
+    private string Date;
+    private string Caption;
+    private byte[] ImageData;
 
     public FormData(string date, string caption, byte[] imageData)
     {
@@ -13,5 +13,4 @@ public class FormData
         Caption = caption;
         ImageData = imageData;
     }
-
 }
