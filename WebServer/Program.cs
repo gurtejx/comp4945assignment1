@@ -32,16 +32,15 @@ class Server
         {
             req.method = HttpRequest.Method.GET;
             req.url = "/";
-            
-            // Parse Multipart Form Data
-            MultipartParser parser = new MultipartParser(data, req);
-            parser.ParseMultipartData();
             uploadServlet.DoGet(req, res);
         }
         else if (lines[0].StartsWith("POST"))
         {
             req.method = HttpRequest.Method.POST;
             req.url = "/";
+            // Parse Multipart Form Data
+            MultipartParser parser = new MultipartParser(data, req);
+            parser.ParseMultipartData();
             uploadServlet.DoPost(req, res);
         }
     
