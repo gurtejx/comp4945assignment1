@@ -8,7 +8,8 @@ public class HttpRequest
         POST
     }
 
-    public List<FormData> parts;
-    public string url;
     public Method method;
+
+    public List<FormData> Parts = [];
+    public string url;
 }
