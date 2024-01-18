@@ -5,51 +5,63 @@ using System.Net.Sockets;
 using System.Text;
 using WebServer;
 
-void ThreadFunction(object? obj)
+class Server
 {
-    var sock = (Socket)obj!;
-    var bytesReceived = new byte[1024];
-    var a = "";
-    while (true)
+    public static void ThreadFunction(object? obj)
     {
-        var bytesRead = sock.Receive(bytesReceived, bytesReceived.Length, 0);
-        if (bytesRead == 0) break;
+        var sock = (Socket)obj!;
+        var bytesReceived = new byte[1024];
+        var a = "";
+        while (true)
+        {
+            var bytesRead = sock.Receive(bytesReceived, bytesReceived.Length, 0);
+            if (bytesRead == 0) break;
 
-        a += Encoding.ASCII.GetString(bytesReceived, 0, bytesRead);
-
-        if (bytesReceived[bytesRead] == 0) break;
+            a += Encoding.ASCII.GetString(bytesReceived, 0, bytesRead);
+            if (bytesReceived[bytesRead] == 0) break;
+        }
+    
+        Console.WriteLine(a);
+        var lines = a.Split();
+    
+        var req = new HttpRequest();
+        var res = new HttpResponse(sock);
+        var uploadServlet = new FileUploadServlet();
+    
+        if (lines[0].StartsWith("GET"))
+        {
+            uploadServlet.DoGet(req, res);
+        }
+        else if (lines[0].StartsWith("POST"))
+        {
+            uploadServlet.DoPost(req, res);
+        }
+    
+        sock.Close();
     }
-
-    Console.WriteLine(a);
-    var lines = a.Split();
-
-    var req = new HttpRequest();
-    var res = new HttpResponse(sock);
-    var us = new FileUploadServlet();
-
-    if (lines[0].StartsWith("GET"))
+    
+    public static void Main(string[] args)
     {
-        // GET 
-        us.DoGet(req, res);
+        try
+        {
+            const int port = 8000;
+            var ipAddress = IPAddress.Parse("127.0.0.1");
+            var ipEndpoint = new IPEndPoint(ipAddress, port);
+    
+            var socket = new Socket(ipEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            socket.Bind(ipEndpoint);
+            socket.Listen(10);
+    
+            while (true)
+            {
+                var connectionSock = socket.Accept();
+                var thread = new Thread(ThreadFunction);
+                thread.Start(connectionSock);
+            }
+        }
+        catch (SocketException e)
+        {
+            Console.WriteLine("Socket exception: {0}", e.Message);
+        }
     }
-    else if (lines[0].StartsWith("POST"))
-    {
-    }
-
-    sock.Close();
-}
-
-const int port = 8000;
-var ipAddress = IPAddress.Parse("127.0.0.1");
-var ipEndpoint = new IPEndPoint(ipAddress, port);
-
-var socket = new Socket(ipEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-socket.Bind(ipEndpoint);
-socket.Listen(10);
-
-while (true)
-{
-    var connectionSock = socket.Accept();
-    var thread = new Thread(ThreadFunction);
-    thread.Start(connectionSock);
 }
