@@ -9,6 +9,6 @@ public class HttpRequest
     }
 
     public List<FormData> parts;
-
     public string url;
+    public Method method;
 }

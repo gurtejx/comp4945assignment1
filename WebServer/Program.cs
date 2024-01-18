@@ -11,18 +11,18 @@ class Server
     {
         var sock = (Socket)obj!;
         var bytesReceived = new byte[1024];
-        var a = "";
+        var data = "";
         while (true)
         {
             var bytesRead = sock.Receive(bytesReceived, bytesReceived.Length, 0);
             if (bytesRead == 0) break;
 
-            a += Encoding.ASCII.GetString(bytesReceived, 0, bytesRead);
+            data += Encoding.ASCII.GetString(bytesReceived, 0, bytesRead);
             if (bytesReceived[bytesRead] == 0) break;
         }
     
-        Console.WriteLine(a);
-        var lines = a.Split();
+        Console.WriteLine(data);
+        var lines = data.Split();
     
         var req = new HttpRequest();
         var res = new HttpResponse(sock);
@@ -30,10 +30,18 @@ class Server
     
         if (lines[0].StartsWith("GET"))
         {
+            req.method = HttpRequest.Method.GET;
+            req.url = "/";
+            
+            // Parse Multipart Form Data
+            MultipartParser parser = new MultipartParser(data, req);
+            parser.ParseMultipartData();
             uploadServlet.DoGet(req, res);
         }
         else if (lines[0].StartsWith("POST"))
         {
+            req.method = HttpRequest.Method.POST;
+            req.url = "/";
             uploadServlet.DoPost(req, res);
         }
     
