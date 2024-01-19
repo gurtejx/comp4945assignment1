@@ -57,20 +57,22 @@ public class MultipartParser(string data, HttpRequest req)
             var mpCurStr = dataIter.Current;
 
             // Convert each character to byte and concatenate to mpDataBytes
-            mpDataBytes = mpDataBytes.Concat(Encoding.UTF8.GetBytes(mpCurStr)).ToArray();
+            mpDataBytes = mpDataBytes.Concat(Encoding.ASCII.GetBytes(mpCurStr)).ToArray();
 
             // Add back the newline characters
-            mpDataBytes = mpDataBytes.Concat("\r\n"u8.ToArray()).ToArray();
+            mpDataBytes = mpDataBytes.Concat(Encoding.ASCII.GetBytes("\n")).ToArray();
 
             dataIter.MoveNext();
         }
 
         // Remove the last newline characters
+        mpDataBytes = mpDataBytes.Skip(2).ToArray();
         mpDataBytes = mpDataBytes.Take(mpDataBytes.Length - 2).ToArray();
 
         var part = new FormData(partName, "file.png", mpDataBytes);
         return part;
     }
+    
 
     public void ParseMultipartData()
     {

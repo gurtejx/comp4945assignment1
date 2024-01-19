@@ -19,9 +19,17 @@ public class FileUploadServlet : IServlet
 
     public void DoPost(HttpRequest req, HttpResponse res)
     {
-        foreach (var formData in req.Parts)
-        {
-           Console.WriteLine(formData.name); 
-        }
+        string docPath =
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        
+        var file = req.Parts.Find(data => data.name == "targetImage");
+        var date = req.Parts.Find(data => data.name == "date");
+        var caption = req.Parts.Find(data => data.name == "caption");
+
+        var dateStr = Encoding.ASCII.GetString(date.byteData);
+        var captionStr = Encoding.ASCII.GetString(caption.byteData);
+
+        using var outputFile = new BinaryWriter(File.Open(Path.Combine(docPath, dateStr + captionStr.Trim()), FileMode.CreateNew));
+        outputFile.Write(file.byteData);
     }
 }

@@ -4,16 +4,19 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using WebServer;
+using System.Net.Http;
 
 internal class Server
 {
     public static void ThreadFunction(object? obj)
     {
         var sock = (Socket)obj!;
-        var bytesReceived = new byte[100000];
+        var bytesReceived = new byte[100000000];
         var data = "";
         var bytesRead = sock.Receive(bytesReceived, bytesReceived.Length, 0);
         data += Encoding.ASCII.GetString(bytesReceived, 0, bytesRead);
+        
+        Console.WriteLine(data);
 
         var lines = data.Split();
 
