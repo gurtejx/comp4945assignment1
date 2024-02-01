@@ -1,15 +1,9 @@
-namespace ConsoleClient;
-
-using System;
-using System.IO;
-using System.Net;
-using System.Net.Sockets;
 using System.Text;
+
+namespace ConsoleClient;
 
 public class ImageUploader : ConsoleClient
 {
-    public ImageUploader() : base() { }
-    
     public new ImageUploader Port(int portNum)
     {
         base.Port(portNum);
@@ -27,6 +21,7 @@ public class ImageUploader : ConsoleClient
         base.Connect();
         return this;
     }
+
     private byte[] GetMultipartFormData(string filePath, string boundary)
     {
         var encoding = Encoding.UTF8;
@@ -46,16 +41,16 @@ public class ImageUploader : ConsoleClient
 
     public void Upload(string filePath)
     {
-        string boundary = "---------------------------" + DateTime.Now.Ticks.ToString("x");
-        byte[] formData = GetMultipartFormData(filePath, boundary);
-        
-        string headers = $"POST / HTTP/1.1\r\n" +
-                         $"Host: {_server}\r\n" +
-                         $"Content-Type: multipart/form-data; boundary={boundary}\r\n" +
-                         $"Content-Length: {formData.Length}\r\n" +
-                         $"Connection: close\r\n\r\n";
+        var boundary = "---------------------------" + DateTime.Now.Ticks.ToString("x");
+        var formData = GetMultipartFormData(filePath, boundary);
+
+        var headers = $"POST / HTTP/1.1\r\n" +
+                      $"Host: {_server}\r\n" +
+                      $"Content-Type: multipart/form-data; boundary={boundary}\r\n" +
+                      $"Content-Length: {formData.Length}\r\n" +
+                      $"Connection: close\r\n\r\n";
         Console.WriteLine($"ImageUploader: Headers = \n{headers}");
-        
+
         _socket.Send(Encoding.UTF8.GetBytes(headers));
         _socket.Send(formData);
         Console.WriteLine("ImageUploader: Upload was successful.");

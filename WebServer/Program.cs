@@ -55,12 +55,15 @@ internal class Server
             var socket = new Socket(ipEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             socket.Bind(ipEndpoint);
             socket.Listen(10);
+            
+            ThreadPool.SetMaxThreads(Environment.ProcessorCount, 0);
 
             while (true)
             {
                 var connectionSock = socket.Accept();
-                var thread = new Thread(ThreadFunction);
-                thread.Start(connectionSock);
+                ThreadPool.QueueUserWorkItem(new WaitCallback(ThreadFunction), connectionSock);
+                // var thread = new Thread(ThreadFunction);
+                // thread.Start(connectionSock);
             }
         }
         catch (SocketException e)

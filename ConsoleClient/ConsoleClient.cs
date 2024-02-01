@@ -1,17 +1,14 @@
-namespace ConsoleClient;
-
-using System;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
+
+namespace ConsoleClient;
 
 public class ConsoleClient
-{ 
+{
     protected int? _port;
     protected string? _server;
     protected Socket _socket;
-    
+
     public ConsoleClient()
     {
         _port = null;
@@ -37,13 +34,12 @@ public class ConsoleClient
         Console.WriteLine($"ConsoleClient: Connecting to Server \'{_server}\', Port {_port}.");
         try
         {
-            
-            IPHostEntry hostEntry = Dns.GetHostEntry(_server);
+            var hostEntry = Dns.GetHostEntry(_server);
 
-            foreach (IPAddress address in hostEntry.AddressList)
+            foreach (var address in hostEntry.AddressList)
             {
-                IPEndPoint ipe = new IPEndPoint(address, _port.Value);
-                Socket tempSocket = new Socket(ipe.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                var ipe = new IPEndPoint(address, _port.Value);
+                var tempSocket = new Socket(ipe.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
                 tempSocket.Connect(ipe);
 
@@ -53,6 +49,7 @@ public class ConsoleClient
                     break;
                 }
             }
+
             Console.WriteLine($"ConsoleClient: Connection was successful to  Server \'{_server}\', Port {_port}.");
             return this;
         }
